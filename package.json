@@ -1,0 +1,42 @@
+{
+  "name": "oauth2-firebase",
+  "version": "0.0.7",
+  "description": "This library provides OAuth2 server implementation for Firebase",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "lint": "tslint -p .",
+    "clean": "rm -rf dist",
+    "clean:pack": "rm -f *.tgz",
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "build:clean": "yarn clean:pack && yarn clean && yarn build",
+    "package": "yarn build:clean && yarn pack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/yoichiro/oauth2-firebase.git"
+  },
+  "author": "Yoichiro Tanaka <yoichiro6642@gmail.com> (https://github.com/yoichiro)",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/yoichiro/oauth2-firebase/issues",
+    "email": "yoichiro6642@gmail.com"
+  },
+  "homepage": "https://github.com/yoichiro/oauth2-firebase.git",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "firebase-admin": "~5.13.1",
+    "firebase-functions": "^2.0.0",
+    "oauth2-nodejs": "^0.0.7",
+    "secure-random-string": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^10.5.2",
+    "tslint": "^5.8.0",
+    "typescript": "^2.5.3",
+    "@types/express": "^4.16.0"
+  }
+}
+

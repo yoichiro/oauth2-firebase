@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Authorization page</title>
+</head>
+<body>
+<p><%= client.providerName %> requests the following:</p>
+<ul>
+    <% for (const key of authToken.scope.split(" ")) { %>
+    <li><%= scopes.get(key) %></li>
+    <% } %>
+</ul>
+<form method="post" action="/authorize/consent">
+    <input type="hidden" name="auth_token" value="<%= encryptedAuthToken %>">
+    <input type="hidden" name="user_id" value="<%= encryptedUserId %>">
+    <button type="submit" name="action" value="allow">Allow</button>
+    <button type="submit" name="action" value="deny">Deny</button>
+</form>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Google Account Authentication page</title>
+    <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase.js"></script>
+    <script>
+        window.addEventListener("load", evt => {
+          const config = {
+            apiKey: "AIzaSyDf_9tNxZKs72To4OVa399itCGHqtSQupU",
+            authDomain: "<%= projectId %>.firebaseapp.com",
+            projectId: "<%= projectId %>"
+          };
+          firebase.initializeApp(config);
+          const provider = new firebase.auth.GoogleAuthProvider();
+          provider.setCustomParameters({
+            "prompt": "consent select_account"
+          });
+          (async () => {
+            try {
+              const {user, credential} = await firebase.auth().getRedirectResult();
+              console.log("user", user);
+              console.log("credential", credential);
+            } catch (err) {
+              console.log("err", err);
+            }
+          })();
+          firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+              user.getIdToken(true).then(idToken => {
+                document.forms[0]["id_token"].value = idToken;
+                document.forms[0]["success"].value = "true";
+                document.forms[0].submit();
+              }).catch(error => {
+                console.log("error", error);
+                document.forms[0]["error"].value = error.toString();
+                document.forms[0]["success"].value = "false";
+                document.forms[0].submit();
+              });
+            } else {
+              firebase.auth().signInWithRedirect(provider);
+            }
+          });
+        });
+    </script>
+</head>
+<body>
+    <p>Now loading...</p>
+    <form name="response" method="post">
+        <input type="hidden" name="auth_token" value="<%= authToken %>">
+        <input type="hidden" name="id_token" value="">
+        <input type="hidden" name="error" value="">
+        <input type="hidden" name="success" value="">
+    </form>
+</body>
+</html>
