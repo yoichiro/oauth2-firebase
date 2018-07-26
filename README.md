@@ -44,7 +44,8 @@ import * as functions from "firebase-functions";
 import {authorize, Configuration, googleAccountAuthentication, token, userinfo} from "oauth2-firebase";
 
 Configuration.init({
-  crypto_auth_token_secret_key_32: functions.config().crypto.auth_token_secret_key_32
+  crypto_auth_token_secret_key_32: functions.config().crypto.auth_token_secret_key_32,
+  project_api_key: functions.config().project.api_key
 });
 
 exports.token = token();
@@ -54,7 +55,7 @@ exports.userinfo = userinfo();
 
 ...
 ```
-
+ 
 By the code above, the following endpoints are defined:
 
 * `https://.../token` - Token endpoint.
@@ -75,15 +76,27 @@ $ cat /dev/urandom | base64 | fold -w 32 | head -n 1
 
 After generating the random string, you need to set the string as the shared key with the following `firebase` command.
 
-```
+```bash
 firebase functions:config:set crypto.auth_token_secret_key_32=<YOUR_GENERATED_RANDOM_STRING>
+```
+
+In addition, you need to set the API Key value of your Firebase project. You can retrieve the API Key value by the
+following steps:
+
+1. Go to the setting page of your Firebase project: `https://console.firebase.google.com/project/<YOUR_PROJECT_ID>/settings/general/`
+1. Get the string of the field labeled `Web API Key`.
+
+Then, execute the following command to register the configuration:
+
+```bash
+firebase functions:config:set project.api_key=<YOUR_API_KEY>
 ```
 
 ## Deploy your project
 
 After writing the code and setting the configuration, deploy your project to the Firebase.
 
-```
+```bash
 $ firebase deploy --only functions
 ```
 

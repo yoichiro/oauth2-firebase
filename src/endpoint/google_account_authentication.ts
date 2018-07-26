@@ -13,7 +13,8 @@ authenticationApp.get("/", (req, resp) => {
   const authToken = request.getParameter("auth_token")
   resp.render("google_account_authentication.ejs", {
     authToken: authToken,
-    projectId: process.env.GCLOUD_PROJECT
+    projectId: process.env.GCLOUD_PROJECT,
+    firebaseApiKey: Configuration.instance.project_apikey
   })
 })
 
