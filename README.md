@@ -7,6 +7,8 @@ This library provides OAuth2 server implementation for Firebase. The points are:
 * Storing information into Cloud Firestore.
 * Supporting Authorization Code Grant, Implicit Grant and Client Credentials grant of OAuth 2.0.
 
+[![NPM Version](https://img.shields.io/npm/v/oauth2-firebase.svg)](https://www.npmjs.org/package/oauth2-firebase)
+
 # How to install
 
 This section describes how to use this library.
