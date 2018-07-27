@@ -57,3 +57,7 @@ export function googleAccountAuthentication() {
 export function facebookAccountAuthentication() {
   return functions.https.onRequest(AuthenticationApp.create("Facebook"))
 }
+
+export function githubAccountAuthentication() {
+  return functions.https.onRequest(AuthenticationApp.create("Github"))
+}

@@ -2,7 +2,7 @@
 
 This library provides OAuth2 server implementation for Firebase. The points are:
 
-* Supporting Google Sign-In and Facebook Login to authenticate users as Federation ID provider using Firebase Authentication.
+* Supporting Google Sign-In, GitHub Login and Facebook Login to authenticate users as Federation ID provider using Firebase Authentication.
 * Providing each endpoint for Cloud Functions.
 * Storing information into Cloud Firestore.
 * Supporting Authorization Code Grant, Implicit Grant and Client Credentials grant of OAuth 2.0.
@@ -72,6 +72,25 @@ Configuration.init({
 exports.token = token();
 exports.authorize = authorize();
 exports.authentication = facebookAccountAuthentication();
+exports.userinfo = userinfo();
+
+...
+```
+
+**GitHub Login**
+
+```javascript
+import * as functions from "firebase-functions";
+import {authorize, Configuration, githubAccountAuthentication, token, userinfo} from "oauth2-firebase";
+
+Configuration.init({
+  crypto_auth_token_secret_key_32: functions.config().crypto.auth_token_secret_key_32,
+  project_api_key: functions.config().project.api_key
+});
+
+exports.token = token();
+exports.authorize = authorize();
+exports.authentication = githubAccountAuthentication();
 exports.userinfo = userinfo();
 
 ...
