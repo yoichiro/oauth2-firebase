@@ -2,7 +2,7 @@
 
 This library provides OAuth2 server implementation for Firebase. The points are:
 
-* Supporting Google Sign-In to authenticate users as Federation ID provider using Firebase Authentication.
+* Supporting Google Sign-In and Facebook Login to authenticate users as Federation ID provider using Firebase Authentication.
 * Providing each endpoint for Cloud Functions.
 * Storing information into Cloud Firestore.
 * Supporting Authorization Code Grant, Implicit Grant and Client Credentials grant of OAuth 2.0.
@@ -14,7 +14,7 @@ This section describes how to use this library.
 ## Prerequisite
 
 You must already have some Firebase project which enables Cloud Functions, Cloud Firestore and Firebase Authentication.
-Especially, it is necessary to enable the Google Sign-In for Federation ID provider on the Firebase Authentication.
+Especially, it is necessary to enable the Google Sign-In or Facebook Login for Federation ID provider on the Firebase Authentication.
 
 ## Install this library
 
@@ -39,6 +39,8 @@ $ vi index.ts
 
 The code you need to write is the following:
 
+**Google Sign-In**
+
 ```javascript
 import * as functions from "firebase-functions";
 import {authorize, Configuration, googleAccountAuthentication, token, userinfo} from "oauth2-firebase";
@@ -51,6 +53,25 @@ Configuration.init({
 exports.token = token();
 exports.authorize = authorize();
 exports.authentication = googleAccountAuthentication();
+exports.userinfo = userinfo();
+
+...
+```
+
+**Facebook Login**
+
+```javascript
+import * as functions from "firebase-functions";
+import {authorize, Configuration, facebookAccountAuthentication, token, userinfo} from "oauth2-firebase";
+
+Configuration.init({
+  crypto_auth_token_secret_key_32: functions.config().crypto.auth_token_secret_key_32,
+  project_api_key: functions.config().project.api_key
+});
+
+exports.token = token();
+exports.authorize = authorize();
+exports.authentication = facebookAccountAuthentication();
 exports.userinfo = userinfo();
 
 ...
