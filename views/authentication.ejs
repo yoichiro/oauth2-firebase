@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>Google Account Authentication page</title>
+    <title><%= providerName %> Account Authentication page</title>
     <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase.js"></script>
     <script>
         window.addEventListener("load", evt => {
@@ -14,7 +14,7 @@
             projectId: "<%= projectId %>"
           };
           firebase.initializeApp(config);
-          const provider = new firebase.auth.GoogleAuthProvider();
+          const provider = new firebase.auth.<%= providerName %>AuthProvider();
           provider.setCustomParameters({
             "prompt": "consent select_account"
           });
