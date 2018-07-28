@@ -1,7 +1,8 @@
 export interface ConfigurationParameters {
   crypto_auth_token_secret_key_32: string
   project_api_key: string
-  views_path?: string
+  views_authentication_path?: string
+  views_consent_path?: string
 }
 
 export class Configuration {
@@ -10,7 +11,8 @@ export class Configuration {
 
   private _crypto_auth_token_secret_key_32: string | undefined
   private _project_apikey: string | undefined
-  private _views_path: string | undefined
+  private _views_authentication_path: string | undefined
+  private _views_consent_path: string | undefined
 
   private constructor() {
   }
@@ -24,7 +26,8 @@ export class Configuration {
 
   public static init(params: ConfigurationParameters): void {
     this.instance._crypto_auth_token_secret_key_32 = params.crypto_auth_token_secret_key_32
-    this.instance._views_path = params.views_path
+    this.instance._views_authentication_path = params.views_authentication_path
+    this.instance._views_consent_path = params.views_consent_path
     this.instance._project_apikey = params.project_api_key
   }
 
@@ -36,9 +39,17 @@ export class Configuration {
     }
   }
 
-  get views_path(): string {
-    if (this._views_path) {
-      return this._views_path
+  get views_authentication_path(): string {
+    if (this._views_authentication_path) {
+      return this._views_authentication_path
+    } else {
+      return __dirname + "/../../views"
+    }
+  }
+
+  get views_consent_path(): string {
+    if (this._views_consent_path) {
+      return this._views_consent_path
     } else {
       return __dirname + "/../../views"
     }

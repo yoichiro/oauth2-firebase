@@ -7,7 +7,7 @@ import {Configuration, Crypto, Navigation} from "../utils";
 
 const authorizeApp = express()
 
-authorizeApp.set("views", Configuration.instance.views_path)
+authorizeApp.set("views", Configuration.instance.views_consent_path)
 
 authorizeApp.get("/entry", async (req, resp) => {
   const request = new RequestWrapper(req)

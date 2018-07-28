@@ -9,7 +9,7 @@ class AuthenticationApp {
   static create(providerName: string): express.Express {
     const authenticationApp = express()
 
-    authenticationApp.set("views", Configuration.instance.views_path)
+    authenticationApp.set("views", Configuration.instance.views_authentication_path)
 
     authenticationApp.get("/", (req, resp) => {
       const request = new RequestWrapper(req)
