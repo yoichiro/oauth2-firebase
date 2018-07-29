@@ -1,8 +1,11 @@
+import {ConsentViewTemplate} from "../endpoint/views/consent_view_template";
+import {DefaultConsentViewTemplate} from "../endpoint/views/default_consent_view_template";
+
 export interface ConfigurationParameters {
   crypto_auth_token_secret_key_32: string
   project_api_key: string
   views_authentication_path?: string
-  views_consent_path?: string
+  views_consent_template?: ConsentViewTemplate
 }
 
 export class Configuration {
@@ -11,8 +14,7 @@ export class Configuration {
 
   private _crypto_auth_token_secret_key_32: string | undefined
   private _project_apikey: string | undefined
-  private _views_authentication_path: string | undefined
-  private _views_consent_path: string | undefined
+  private _view_consent_template: ConsentViewTemplate | undefined
 
   private constructor() {
   }
@@ -26,9 +28,8 @@ export class Configuration {
 
   public static init(params: ConfigurationParameters): void {
     this.instance._crypto_auth_token_secret_key_32 = params.crypto_auth_token_secret_key_32
-    this.instance._views_authentication_path = params.views_authentication_path
-    this.instance._views_consent_path = params.views_consent_path
     this.instance._project_apikey = params.project_api_key
+    this.instance._view_consent_template = params.views_consent_template
   }
 
   public get crypto_auth_token_secret_key_32(): string {
@@ -39,27 +40,19 @@ export class Configuration {
     }
   }
 
-  get views_authentication_path(): string {
-    if (this._views_authentication_path) {
-      return this._views_authentication_path
-    } else {
-      return __dirname + "/../../views"
-    }
-  }
-
-  get views_consent_path(): string {
-    if (this._views_consent_path) {
-      return this._views_consent_path
-    } else {
-      return __dirname + "/../../views"
-    }
-  }
-
   get project_apikey(): string {
     if (this._project_apikey) {
       return this._project_apikey
     } else {
       throw new Error("project_api_key not set")
+    }
+  }
+
+  get view_consent_template(): ConsentViewTemplate {
+    if (this._view_consent_template) {
+      return this._view_consent_template
+    } else {
+      return new DefaultConsentViewTemplate()
     }
   }
 
