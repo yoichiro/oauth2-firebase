@@ -1,13 +1,12 @@
 import * as functions from "firebase-functions";
 import * as express from "express";
+import * as ejs from "ejs";
 import {RequestMap, RequestWrapper} from "../models";
 import {AuthorizationEndpoint} from "oauth2-nodejs";
 import {CloudFirestoreDataHandlerFactory, CloudFirestoreScopes, CloudFirestoreClients} from "../data";
 import {Configuration, Crypto, Navigation} from "../utils";
 
 const authorizeApp = express()
-
-authorizeApp.set("views", Configuration.instance.views_consent_path)
 
 authorizeApp.get("/entry", async (req, resp) => {
   const request = new RequestWrapper(req)
@@ -49,13 +48,21 @@ authorizeApp.get("/consent", async (req, resp) => {
   const client = await CloudFirestoreClients.fetch(authToken["client_id"])
   const encryptedUserId = request.getParameter("user_id")!
   const scopes = await CloudFirestoreScopes.fetch()
-  resp.render("consent.ejs", {
-    authToken,
-    encryptedAuthToken,
-    encryptedUserId,
-    scopes,
-    client
-  })
+  const consentViewTemplate = Configuration.instance.view_consent_template
+  try {
+    const template = await consentViewTemplate.provide()
+    const html = ejs.render(template, {
+        scope: authToken["scope"],
+        encryptedAuthToken,
+        encryptedUserId,
+        scopes,
+        providerName: client!["providerName"]
+    })
+    resp.status(200).send(html)
+  } catch(e) {
+    console.error(e)
+    resp.status(500).send(e.toString())
+  }
 })
 
 authorizeApp.post("/consent", async (req, resp) => {

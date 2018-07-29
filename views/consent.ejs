@@ -7,9 +7,9 @@
     <title>Authorization page</title>
 </head>
 <body>
-<p><%= client.providerName %> requests the following:</p>
+<p><%= providerName %> requests the following:</p>
 <ul>
-    <% for (const key of authToken.scope.split(" ")) { %>
+    <% for (const key of scope.split(" ")) { %>
     <li><%= scopes.get(key) %></li>
     <% } %>
 </ul>

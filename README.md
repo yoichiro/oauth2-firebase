@@ -201,3 +201,78 @@ The following is a sample JSON string which represents the values above:
   "description": "User profile information (User ID and Nickname)"
 }
 ```
+
+# Customize the consent page design
+
+This library provides a very simple design of the consent page. But, you can customize the design. For instance, you
+can provide your own template string for the consent page from your code.
+
+To customize the page design, you need to create a new class which implements the `ConsentViewTemplate` interface.
+For example, the class code will be like the following:
+
+```javascript
+import {ConsentViewTemplate} from "oauth2-firebase/dist/endpoint/views/consent_view_template";
+
+export class MyConsentViewTemplate implements ConsentViewTemplate {
+
+  provide(): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      resolve(`<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Authorization page</title>
+</head>
+<body>
+<p><%= providerName %> requests the following permissions:</p>
+<ul>
+    <% for (const key of scope.split(" ")) { %>
+    <li><%= scopes.get(key) %></li>
+    <% } %>
+</ul>
+<p>Could you allow them?</p>
+<form method="post" action="/authorize/consent">
+    <input type="hidden" name="auth_token" value="<%= encryptedAuthToken %>">
+    <input type="hidden" name="user_id" value="<%= encryptedUserId %>">
+    <button type="submit" name="action" value="allow">Allow</button>
+    <button type="submit" name="action" value="deny">Deny</button>
+</form>
+</body>
+</html>
+`)
+    })
+  }
+
+}
+```
+
+The template string is written as the "ejs" template. This library binds the following values to the template at rendering.
+
+* `providerName: string` - The provider name of the client.
+* `scope: string` - The scope string devided by space the client code specifies.
+* `scopes: Map<string, string>` - The map object which has a set of the scope name and its description.
+* `encryptedAuthToken: string` - The encrypted auth token. You need to set this as the hidden parameter.
+* `encryptedUserId: string` - The encrypted user ID. You need to set this as the hidden parameter.
+
+And, you need to set the instance to the Configuration class instance as like the following:
+
+```javascript
+import * as functions from "firebase-functions";
+import {authorize, Configuration, googleAccountAuthentication, token, userinfo} from "oauth2-firebase";
+import {MyConsentViewTemplate} from "./my_consent_view_template"
+
+Configuration.init({
+  crypto_auth_token_secret_key_32: functions.config().crypto.auth_token_secret_key_32,
+  project_api_key: functions.config().project.api_key,
+  views_consent_template: new MyConsentViewTemplate()
+});
+
+exports.token = token();
+exports.authorize = authorize();
+exports.authentication = googleAccountAuthentication();
+exports.userinfo = userinfo();
+
+...
+```
