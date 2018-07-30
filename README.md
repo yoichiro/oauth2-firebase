@@ -276,3 +276,46 @@ exports.userinfo = userinfo();
 
 ...
 ```
+
+# Add Protected Resource Endpoint
+
+In this library, the `userinfo` protected resource endpoint is provided as default. But, you can add your own protected
+resource endpoint. Each protected resource receives the request including the access token issued for users/clients,
+checks whether the access token is valid or not against using the protected resource, and actually returns the resources
+and/or creates some resource or does something. This library provides a convenience abstract class. You can define your
+endpoint by creating a new class which extends the abstract class and implements the following two methods:
+
+* `validateScope()` - Check whether the passed scopes are valid to call this endpoint.
+* `handleRequest()` - The code body to access to target resources.
+
+To publish your endpoint on the Cloud Functions, you need to retrieve the endpoint function by the `endpoint` property.
+As the result, your code will be like the following:
+
+```javascript
+import * as express from "express";
+import {AbstractProtectedResourceEndpoint} from "oauth2-firebase";
+import {ProtectedResourceEndpointResponse} from "oauth2-nodejs";
+
+class FriendsEndpoint extends AbstractProtectedResourceEndpoint {
+
+  protected validateScope(scopes: string[]): boolean {
+    return scopes.indexOf("frields") !== -1;
+  }
+  
+  protected handleRequest(req: express.Request, endpointInfo: ProtectedResourceResponse): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      fetchFrields(endpointInfo.userId).then(friends => {
+        resolve(JSON.stringify(friends));
+      }).catch(e => {
+        reject(e);
+      })
+    });
+  }
+
+}
+
+exports.friends = new FriendsEndpoint().endpoint;
+```
+
+If the passed access token is invalid, the `handleRequest()` function will not be called and returns an error response
+by the abstract class.

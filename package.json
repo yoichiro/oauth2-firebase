@@ -1,6 +1,6 @@
 {
   "name": "oauth2-firebase",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "This library provides OAuth2 server implementation for Firebase",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
