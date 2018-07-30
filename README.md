@@ -142,7 +142,14 @@ After writing the code and setting the configuration, deploy your project to the
 $ firebase deploy --only functions
 ```
 
-# Register your client
+# Operations
+
+You need to setup the database to operate OAuth2.0 server as like the following:
+
+* Register your client
+* Set a description for each scope
+
+## Register your client
 
 In OAuth2.0, each client must be registered in advance. This library uses the Cloud Firestore as the storage
 for the client definitions. In the current version, you need to register client definitions with the Firebase Console
@@ -183,7 +190,7 @@ The following is a sample JSON string which represents the values above:
 }
 ```
 
-# Set a description for each scope
+## Set a description for each scope
 
 This library shows a consent page to ask whether they allow or deny scopes. You need to register descriptions for each scope with the Firebase Console manually. To register a scope description, add a new doc in a "scopes" collection as like the following:
 
@@ -202,7 +209,11 @@ The following is a sample JSON string which represents the values above:
 }
 ```
 
-# Set expires_in values to access tokens
+# Configurations
+
+You can configure each behavior of this library.
+
+## Set expires_in values to access tokens
 
 You can set each expires_in values (unit: sec) for access tokens per grant types. For example:
 
@@ -227,7 +238,7 @@ In this library, the default values are:
 * Client Credentials: 86400
 * Refresh Token: 86400
 
-# Customize the consent page design
+## Customize the consent page design
 
 This library provides a very simple design of the consent page. But, you can customize the design. For instance, you
 can provide your own template string for the consent page from your code.
@@ -302,7 +313,7 @@ exports.userinfo = userinfo();
 ...
 ```
 
-# Add Protected Resource Endpoint
+## Add Protected Resource Endpoint
 
 In this library, the `userinfo` protected resource endpoint is provided as default. But, you can add your own protected
 resource endpoint. Each protected resource receives the request including the access token issued for users/clients,
