@@ -202,6 +202,31 @@ The following is a sample JSON string which represents the values above:
 }
 ```
 
+# Set expires_in values to access tokens
+
+You can set each expires_in values (unit: sec) for access tokens per grant types. For example:
+
+```
+const expiresInMap = new Map<string, number>();
+expiresInMap.set("authorization_code", 2678400);
+expiresInMap.set("implicit", 86400);
+expiresInMap.set("password", 86400);
+expiresInMap.set("client_credentials", 2678400);
+expiresInMap.set("refresh_token", 2678400);
+Configuration.init({
+  ...
+  tokens_expires_in: expiresInMap
+});
+```
+
+In this library, the default values are:
+
+* Authorization Code Grant: 86400
+* Implicit Grant: 3600
+* Password: 86400
+* Client Credentials: 86400
+* Refresh Token: 86400
+
 # Customize the consent page design
 
 This library provides a very simple design of the consent page. But, you can customize the design. For instance, you

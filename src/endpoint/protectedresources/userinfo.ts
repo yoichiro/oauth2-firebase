@@ -1,9 +1,10 @@
 import * as admin from "firebase-admin";
+import * as functions from "firebase-functions";
 import * as express from "express";
 import {ProtectedResourceEndpointResponse} from "oauth2-nodejs";
 import {AbstractProtectedResourceEndpoint} from "./abstract_protected_resource_endpoint";
 
-class UserinfoEndpoint extends AbstractProtectedResourceEndpoint {
+export class UserinfoEndpoint extends AbstractProtectedResourceEndpoint {
 
   protected handleRequest(req: express.Request, endpointInfo: ProtectedResourceEndpointResponse): Promise<string> {
     return new Promise<string>((resolve, reject) => {
@@ -22,6 +23,6 @@ class UserinfoEndpoint extends AbstractProtectedResourceEndpoint {
 
 }
 
-export function userinfo() {
+export function userinfo(): functions.HttpsFunction {
   return new UserinfoEndpoint().endpoint
 }
