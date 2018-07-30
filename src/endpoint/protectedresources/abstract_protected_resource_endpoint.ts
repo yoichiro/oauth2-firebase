@@ -1,15 +1,13 @@
-import {HttpsFunction} from "firebase-functions/lib/cloud-functions";
-import {AccessDenied, DefaultAccessTokenFetcherProvider, ProtectedResourceEndpoint, UnknownError} from "oauth2-nodejs";
-import {CloudFirestoreDataHandlerFactory} from "../../data";
+import * as express from "express";
 import * as functions from "firebase-functions";
+import {AccessDenied, DefaultAccessTokenFetcherProvider, ProtectedResourceEndpoint, UnknownError, ProtectedResourceEndpointResponse} from "oauth2-nodejs";
+import {CloudFirestoreDataHandlerFactory} from "../../data";
 import {RequestWrapper} from "../../models";
 import {Navigation} from "../../utils";
-import * as express from "express";
-import {ProtectedResourceEndpointResponse} from "oauth2-nodejs/dist/endpoint/protected_resource_endpoint";
 
 export abstract class AbstractProtectedResourceEndpoint {
 
-  public get endpoint(): HttpsFunction {
+  public get endpoint(): functions.HttpsFunction {
     return functions.https.onRequest(async (req, resp) => {
       const request = new RequestWrapper(req)
       const protectedResourceEndpoint = new ProtectedResourceEndpoint()

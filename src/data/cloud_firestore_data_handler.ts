@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import * as firestore from "@google-cloud/firestore";
 import * as url from "url";
 import {AccessToken, AuthInfo, DataHandler, Request} from "oauth2-nodejs";
+import {Configuration} from "../utils";
 const secureRandomString = require("secure-random-string");
 
 admin.initializeApp(functions.config().firebase)
@@ -22,8 +23,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
   async createOrUpdateAccessToken(authInfo: AuthInfo, grantType: string): Promise<AccessToken | undefined> {
     const db = admin.firestore()
     const token = secureRandomString({length: 128})
-    // TODO: Load expiration length from configuration.
-    const expiresIn = grantType === "implicit" ? 3600 : 86400
+    const expiresIn = Configuration.instance.tokens_expires_in.get(grantType) || 86400
     const createdOn = Date.now()
     const data = {
       auth_info_id: authInfo.id,
