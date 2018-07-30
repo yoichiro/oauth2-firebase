@@ -46,7 +46,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
     let queryRef = db.collection("auth_infos").where("client_id", "==", clientId).where("user_id", "==", userId)
     if (scope) {
       scope.split(" ").forEach(s => {
-        queryRef = queryRef.where(`client_id.${s}`, "==", true)
+        queryRef = queryRef.where(`scope.${s}`, "==", true)
       })
     }
     const snapshot = await queryRef.get()
