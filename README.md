@@ -45,7 +45,7 @@ The code you need to write is the following:
 
 ```javascript
 import * as functions from "firebase-functions";
-import {authorize, Configuration, googleAccountAuthentication, token, userinfo} from "oauth2-firebase";
+import {authorize, Configuration, googleAccountAuthentication, token} from "oauth2-firebase";
 
 Configuration.init({
   crypto_auth_token_secret_key_32: functions.config().crypto.auth_token_secret_key_32,
@@ -55,7 +55,6 @@ Configuration.init({
 exports.token = token();
 exports.authorize = authorize();
 exports.authentication = googleAccountAuthentication();
-exports.userinfo = userinfo();
 
 ...
 ```
@@ -64,7 +63,7 @@ exports.userinfo = userinfo();
 
 ```javascript
 import * as functions from "firebase-functions";
-import {authorize, Configuration, facebookAccountAuthentication, token, userinfo} from "oauth2-firebase";
+import {authorize, Configuration, facebookAccountAuthentication, token} from "oauth2-firebase";
 
 Configuration.init({
   crypto_auth_token_secret_key_32: functions.config().crypto.auth_token_secret_key_32,
@@ -74,7 +73,6 @@ Configuration.init({
 exports.token = token();
 exports.authorize = authorize();
 exports.authentication = facebookAccountAuthentication();
-exports.userinfo = userinfo();
 
 ...
 ```
@@ -83,7 +81,7 @@ exports.userinfo = userinfo();
 
 ```javascript
 import * as functions from "firebase-functions";
-import {authorize, Configuration, githubAccountAuthentication, token, userinfo} from "oauth2-firebase";
+import {authorize, Configuration, githubAccountAuthentication, token} from "oauth2-firebase";
 
 Configuration.init({
   crypto_auth_token_secret_key_32: functions.config().crypto.auth_token_secret_key_32,
@@ -93,7 +91,6 @@ Configuration.init({
 exports.token = token();
 exports.authorize = authorize();
 exports.authentication = githubAccountAuthentication();
-exports.userinfo = userinfo();
 
 ...
 ```
@@ -103,7 +100,6 @@ By the code above, the following endpoints are defined:
 * `https://.../token` - Token endpoint.
 * `https://.../authorize` - Authorization endpoint.
 * `https://.../authentication` - Login page for Google Sign-In.
-* `https://.../userinfo` - Userinfo API endpoint.
 
 ## Generate a shared key
 
@@ -209,6 +205,71 @@ The following is a sample JSON string which represents the values above:
 }
 ```
 
+# Use Additional Endpoints
+
+This library provides some additional endpoints:
+
+* userinfo - Userinfo API endpoint.
+* tokeninfo - Tokeninfo API endpoint.
+
+## Userinfo API endpoint
+
+In OpenID Connect specification, the userinfo endpoint is defined. It provides the authenticated user's information.
+You can provide the userinfo API endpoint easily by writing the following code:
+
+```javascript
+import {userinfo} from "oauth2-firebase";
+...
+exports.userinfo = userinfo();
+```
+
+This userinfo endpoint works as a protected resource endpoint. That is, the access token is necessary to use this endpoint.
+For example:
+
+```bash
+$ curl -X POST -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>" https://.../userinfo
+```
+
+If the access token is valid, you will retrieve the following result:
+
+```json
+{
+  "sub": "<AUTHENTICATED_USER_ID>",
+  "name": "<AUTHENTICATED_USER_NAME>"
+}
+```
+
+## Tokeninfo API endpoint
+
+The tokeninfo API endpoint provides the information of the passed access token. By this endpoint, you can confirm
+whether the passed access token is issued for your client or not. You can provide the tokeninfo API endpoint easily by
+writing the following code:
+
+```javascript
+import {tokeninfo} from "oauth2-firebase";
+...
+exports.tokeninfo = tokeninfo();
+```
+
+The tokeninfo API endpoint accepts an access token as a query parameter called "access_token". For example:
+
+```bash
+curl https://.../tokeninfo?access_token=<YOUR_ACCESS_TOKEN>
+```
+
+If the access token is valid, you will retrieve the following result:
+
+```json
+{
+  "aud": "<CLIENT_ID>",
+  "sub": "<USER_ID>",
+  "expires_in": "<EXPIRES_IN_VALUE>",
+  "scope": "<SCOPE_VALUES>"
+}
+```
+
+You can check whether the access token is for your client or not by comparing the `aud` value.
+
 # Configurations
 
 You can configure each behavior of this library.
@@ -217,7 +278,7 @@ You can configure each behavior of this library.
 
 You can set each expires_in values (unit: sec) for access tokens per grant types. For example:
 
-```
+```javascript
 const expiresInMap = new Map<string, number>();
 expiresInMap.set("authorization_code", 2678400);
 expiresInMap.set("implicit", 86400);
@@ -313,7 +374,7 @@ exports.userinfo = userinfo();
 ...
 ```
 
-## Add Protected Resource Endpoint
+## Add Your Protected Resource Endpoint
 
 In this library, the `userinfo` protected resource endpoint is provided as default. But, you can add your own protected
 resource endpoint. Each protected resource receives the request including the access token issued for users/clients,
