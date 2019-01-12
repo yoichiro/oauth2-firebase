@@ -30,7 +30,7 @@
     "express": "^4.16.3",
     "firebase-admin": "~5.13.1",
     "firebase-functions": "^2.0.0",
-    "oauth2-nodejs": "^0.1.0",
+    "oauth2-nodejs": "^0.2.0",
     "secure-random-string": "^1.1.0"
   },
   "devDependencies": {
