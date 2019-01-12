@@ -1956,9 +1956,10 @@ oauth-sign@~0.8.2:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.8.2.tgz#46a6ab7f0aead8deae9ec0565780b7d4efeb9d43"
 
-oauth2-nodejs@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/oauth2-nodejs/-/oauth2-nodejs-0.1.0.tgz#477aa96a86488c49849cc570836a51efb377b614"
+oauth2-nodejs@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/oauth2-nodejs/-/oauth2-nodejs-0.2.0.tgz#3993ec5ee2a1741caa3563e17aed514b4838848c"
+  integrity sha512-3oE+VJPCuLXv5F6JmvNphQgyh4xfrCjt0qeGkvTDToRIjbxmoLz2zuC9tuNXiAHTxfUlLh4OPeYPKLVWzonkvA==
 
 object-assign@^4, object-assign@^4.1.0:
   version "4.1.1"
