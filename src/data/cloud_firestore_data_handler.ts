@@ -52,13 +52,27 @@ export class CloudFirestoreDataHandler implements DataHandler {
     const snapshot = await queryRef.get()
     const code = secureRandomString({length: 64})
     if (snapshot.empty) {
+      const request = this.getRequest()
+      const federatedAccessToken = request.getParameter("federated_access_token")
+      const federatedAuthProviderName = request.getParameter("federated_auth_provider_name")
       const refreshToken = secureRandomString()
       const data = {
         user_id: userId,
         client_id: clientId,
         scope: scope ? scope.split(" ").reduce((a: {[key: string]: boolean}, c: string) => {a[c] = true; return a;}, {}) : {},
         refresh_token: refreshToken,
-        code: code
+        code: code,
+        additional_info: {}
+      }
+      if (federatedAccessToken && federatedAccessToken.length > 0) {
+        data.additional_info = {
+          federated_access_token: federatedAccessToken
+        }
+      }
+      if (federatedAuthProviderName && federatedAuthProviderName.length > 0) {
+        data.additional_info = {
+          federated_auth_provider_name: federatedAuthProviderName
+        }
       }
       const authInfoRef = await db.collection("auth_infos").add(data)
       const result = new AuthInfo()
@@ -69,6 +83,12 @@ export class CloudFirestoreDataHandler implements DataHandler {
       result.code = code
       if (scope) {
         result.scope = scope
+      }
+      if (federatedAccessToken && federatedAccessToken.length > 0) {
+        result.setAdditionalInfo("federated_access_token", federatedAccessToken)
+      }
+      if (federatedAuthProviderName && federatedAuthProviderName.length > 0) {
+        result.setAdditionalInfo("federated_auth_provider_name", federatedAuthProviderName)
       }
       return result
     } else {
@@ -87,6 +107,9 @@ export class CloudFirestoreDataHandler implements DataHandler {
       if (scopes.length > 0) {
         result.scope = scopes.join(" ")
       }
+      Object.keys(authInfo.get("additional_info")).forEach(name => {
+        result.setAdditionalInfo(name, authInfo.get(`additional_info.${name}`))
+      })
       return result
     }
   }
@@ -110,10 +133,14 @@ export class CloudFirestoreDataHandler implements DataHandler {
     result.userId = authInfo.get("user_id")
     result.clientId = authInfo.get("client_id")
     result.refreshToken = authInfo.get("refresh_token")
+    result.code = authInfo.get("code")
     const scopes = Object.keys(authInfo.get("scope"))
     if (scopes.length > 0) {
       result.scope = scopes.join(" ")
     }
+    Object.keys(authInfo.get("additional_info")).forEach(name => {
+      result.setAdditionalInfo(name, authInfo.get(`additional_info.${name}`))
+    })
     return result
   }
 

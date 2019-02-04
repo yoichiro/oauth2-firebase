@@ -47,6 +47,8 @@ authorizeApp.get("/consent", async (req, resp) => {
   const authToken = JSON.parse(Crypto.decrypt(encryptedAuthToken))
   const client = await CloudFirestoreClients.fetch(authToken["client_id"])
   const encryptedUserId = request.getParameter("user_id")!
+  const encryptedAccessToken = request.getParameter("access_token")!
+  const federatedAuthProviderName = request.getParameter("federated_auth_provider_name")!
   const scopes = await CloudFirestoreScopes.fetch()
   const consentViewTemplate = Configuration.instance.view_consent_template
   try {
@@ -55,8 +57,10 @@ authorizeApp.get("/consent", async (req, resp) => {
         scope: authToken["scope"],
         encryptedAuthToken,
         encryptedUserId,
+        encryptedAccessToken,
         scopes,
-        providerName: client!["providerName"]
+        providerName: client!["providerName"],
+        federatedAuthProviderName
     })
     resp.status(200).send(html)
   } catch(e) {
@@ -70,7 +74,10 @@ authorizeApp.post("/consent", async (req, resp) => {
   const encryptedAuthToken = requestWrapper.getParameter("auth_token")!
   const authToken = JSON.parse(Crypto.decrypt(encryptedAuthToken))
   const encryptedUserId = requestWrapper.getParameter("user_id")!
+  const encryptedAccessToken = requestWrapper.getParameter("access_token")!
+  const federatedAuthProviderName = requestWrapper.getParameter("federated_auth_provider_name")!
   const userId = Crypto.decrypt(encryptedUserId)
+  const federatedAccessToken = Crypto.decrypt(encryptedAccessToken)
   const requestMap = new RequestMap()
   requestMap.setParameter("user_id", userId)
   requestMap.setParameter("state", authToken["state"])
@@ -78,6 +85,8 @@ authorizeApp.post("/consent", async (req, resp) => {
   requestMap.setParameter("redirect_uri", authToken["redirect_uri"])
   requestMap.setParameter("response_type", authToken["response_type"])
   requestMap.setParameter("scope", authToken["scope"])
+  requestMap.setParameter("federated_access_token", federatedAccessToken)
+  requestMap.setParameter("federated_auth_provider_name", federatedAuthProviderName)
   const authorizationEndpoint = new AuthorizationEndpoint()
   authorizationEndpoint.dataHandlerFactory = new CloudFirestoreDataHandlerFactory()
   authorizationEndpoint.allowedResponseTypes = ["code", "token"]

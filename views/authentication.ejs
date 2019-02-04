@@ -18,31 +18,35 @@
           provider.setCustomParameters({
             "prompt": "consent select_account"
           });
+          const scopes = [<%- scopes.map(scope => {return `"${scope}"`}).join(", ") %>];
+          scopes.forEach(scope => {
+            provider.addScope(scope);
+          });
           (async () => {
             try {
               const {user, credential} = await firebase.auth().getRedirectResult();
-              console.log("user", user);
-              console.log("credential", credential);
+              if (user && credential) {
+                user.getIdToken(true).then(idToken => {
+                  document.forms[0]["id_token"].value = idToken;
+                  document.forms[0]["access_token"].value = credential.accessToken;
+                  document.forms[0]["success"].value = "true";
+                  document.forms[0].submit();
+                }).catch(e => {
+                  console.log("e", e);
+                  document.forms[0]["error"].value = e.toString();
+                  document.forms[0]["success"].value = "false";
+                  document.forms[0].submit();
+                });
+              } else {
+                firebase.auth().signInWithRedirect(provider);
+              }
             } catch (err) {
-              console.log("err", err);
+              console.log("error", err);
+              document.forms[0]["error"].value = err.toString();
+              document.forms[0]["success"].value = "false";
+              document.forms[0].submit();
             }
           })();
-          firebase.auth().onAuthStateChanged(user => {
-            if (user) {
-              user.getIdToken(true).then(idToken => {
-                document.forms[0]["id_token"].value = idToken;
-                document.forms[0]["success"].value = "true";
-                document.forms[0].submit();
-              }).catch(error => {
-                console.log("error", error);
-                document.forms[0]["error"].value = error.toString();
-                document.forms[0]["success"].value = "false";
-                document.forms[0].submit();
-              });
-            } else {
-              firebase.auth().signInWithRedirect(provider);
-            }
-          });
         });
     </script>
 </head>
@@ -51,8 +55,10 @@
     <form name="response" method="post">
         <input type="hidden" name="auth_token" value="<%= authToken %>">
         <input type="hidden" name="id_token" value="">
+        <input type="hidden" name="access_token" value="">
         <input type="hidden" name="error" value="">
         <input type="hidden" name="success" value="">
+        <input type="hidden" name="federated_auth_prodiver_name" value="<%= providerName %>">
     </form>
 </body>
 </html>

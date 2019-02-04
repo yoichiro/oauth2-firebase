@@ -7,7 +7,7 @@ import {Configuration, Crypto, Navigation} from "../utils";
 
 class AuthenticationApp {
 
-  static create(providerName: string): express.Express {
+  static create(providerName: string, scopes: string[]): express.Express {
     const authenticationApp = express()
 
     authenticationApp.set("views", path.join(__dirname, "../../views"))
@@ -16,10 +16,11 @@ class AuthenticationApp {
       const request = new RequestWrapper(req)
       const authToken = request.getParameter("auth_token")
       resp.render("authentication.ejs", {
-        authToken: authToken,
+        authToken,
         projectId: process.env.GCLOUD_PROJECT,
         projectApiKey: Configuration.instance.project_apikey,
-        providerName: providerName
+        providerName,
+        scopes
       })
     })
 
@@ -27,6 +28,8 @@ class AuthenticationApp {
       const request = new RequestWrapper(req)
       const encryptedAuthToken = request.getParameter("auth_token")!
       const idTokenString = request.getParameter("id_token")!
+      const accessTokenString = request.getParameter("access_token")!
+      const providerName = request.getParameter("provider_name")!
       const success = request.getParameter("success")
       const error = request.getParameter("error")
       if (success === "true") {
@@ -34,7 +37,17 @@ class AuthenticationApp {
           const idToken = await admin.auth().verifyIdToken(idTokenString)
           if (idToken.aud === process.env.GCLOUD_PROJECT) {
             const encryptedUserId = Crypto.encrypt(idToken.sub)
-            Navigation.redirect(resp, "/authorize/consent", {"auth_token": encryptedAuthToken, "user_id": encryptedUserId})
+            const encryptedAccessToken = Crypto.encrypt(accessTokenString)
+            Navigation.redirect(
+              resp,
+              "/authorize/consent",
+              {
+                "auth_token": encryptedAuthToken,
+                "user_id": encryptedUserId,
+                "access_token": encryptedAccessToken,
+                "provider_name": providerName
+              })
+            return
           }
         } catch(e) {
           console.log("e", e)
@@ -51,14 +64,14 @@ class AuthenticationApp {
 
 }
 
-export function googleAccountAuthentication() {
-  return functions.https.onRequest(AuthenticationApp.create("Google"))
+export function googleAccountAuthentication(scopes: string[] = []) {
+  return functions.https.onRequest(AuthenticationApp.create("Google", scopes))
 }
 
-export function facebookAccountAuthentication() {
-  return functions.https.onRequest(AuthenticationApp.create("Facebook"))
+export function facebookAccountAuthentication(scopes: string[] = []) {
+  return functions.https.onRequest(AuthenticationApp.create("Facebook", scopes))
 }
 
-export function githubAccountAuthentication() {
-  return functions.https.onRequest(AuthenticationApp.create("Github"))
+export function githubAccountAuthentication(scopes: string[] = []) {
+  return functions.https.onRequest(AuthenticationApp.create("Github", scopes))
 }
