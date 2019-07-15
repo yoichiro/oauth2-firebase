@@ -1,7 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as express from "express";
-import * as path from "path";
 import {RequestWrapper} from "../models";
 import {Configuration, Crypto, Navigation} from "../utils";
 
@@ -10,7 +9,7 @@ class AuthenticationApp {
   static create(providerName: string): express.Express {
     const authenticationApp = express()
 
-    authenticationApp.set("views", path.join(__dirname, "../../views"))
+    authenticationApp.set("views", Configuration.instance.view_path)
 
     authenticationApp.get("/", (req, resp) => {
       const request = new RequestWrapper(req)

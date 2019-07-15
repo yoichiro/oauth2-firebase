@@ -1,5 +1,7 @@
 import {ConsentViewTemplate} from "../endpoint/views/consent_view_template";
 import {DefaultConsentViewTemplate} from "../endpoint/views/default_consent_view_template";
+import * as fs from "fs";
+import * as path from "path";
 
 export interface ConfigurationParameters {
   crypto_auth_token_secret_key_32: string
@@ -7,6 +9,7 @@ export interface ConfigurationParameters {
   views_authentication_path?: string
   views_consent_template?: ConsentViewTemplate
   tokens_expires_in?: Map<string, number>
+  view_path: string
 }
 
 export class Configuration {
@@ -17,6 +20,7 @@ export class Configuration {
   private _project_apikey: string | undefined
   private _view_consent_template: ConsentViewTemplate | undefined
   private _tokens_expires_in: Map<string, number> | undefined
+  private _view_path: string
 
   private constructor() {
   }
@@ -33,6 +37,7 @@ export class Configuration {
     this.instance._project_apikey = params.project_api_key
     this.instance._view_consent_template = params.views_consent_template
     this.instance._tokens_expires_in = params.tokens_expires_in
+    this.instance._view_path = params.view_path
   }
 
   public get crypto_auth_token_secret_key_32(): string {
@@ -70,6 +75,14 @@ export class Configuration {
       result.set("client_credentials", 86400)
       result.set("refresh_token", 86400)
       return result
+    }
+  }
+
+  get view_path(): string {
+    if(this._view_path && fs.existsSync(this._view_path)) {
+      return this._view_path;
+    } else {
+      return path.join(__dirname, '../../views');
     }
   }
 
