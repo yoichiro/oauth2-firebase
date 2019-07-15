@@ -9,7 +9,7 @@ export interface ConfigurationParameters {
   views_authentication_path?: string
   views_consent_template?: ConsentViewTemplate
   tokens_expires_in?: Map<string, number>
-  view_path: string
+  view_path?: string
 }
 
 export class Configuration {
@@ -20,7 +20,7 @@ export class Configuration {
   private _project_apikey: string | undefined
   private _view_consent_template: ConsentViewTemplate | undefined
   private _tokens_expires_in: Map<string, number> | undefined
-  private _view_path: string
+  private _view_path: string | undefined
 
   private constructor() {
   }
