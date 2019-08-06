@@ -34,6 +34,7 @@ class AuthenticationApp {
           if (idToken.aud === process.env.GCLOUD_PROJECT) {
             const encryptedUserId = Crypto.encrypt(idToken.sub)
             Navigation.redirect(resp, "/authorize/consent", {"auth_token": encryptedAuthToken, "user_id": encryptedUserId})
+            return;
           }
         } catch(e) {
           console.log("e", e)
