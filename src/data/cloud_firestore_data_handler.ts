@@ -8,6 +8,10 @@ const secureRandomString = require("secure-random-string");
 
 admin.initializeApp(functions.config().firebase)
 
+const db = admin.firestore()
+// fixed deprecated message on timestamps in firebase
+db.settings({timestampsInSnapshots: true})
+
 export class CloudFirestoreDataHandler implements DataHandler {
 
   private _request: Request
@@ -21,7 +25,6 @@ export class CloudFirestoreDataHandler implements DataHandler {
   }
 
   async createOrUpdateAccessToken(authInfo: AuthInfo, grantType: string): Promise<AccessToken | undefined> {
-    const db = admin.firestore()
     const token = secureRandomString({length: 128})
     const expiresIn = Configuration.instance.tokens_expires_in.get(grantType) || 86400
     const createdOn = Date.now()
@@ -42,7 +45,6 @@ export class CloudFirestoreDataHandler implements DataHandler {
 
   async createOrUpdateAuthInfo(clientId: string, userId: string, scope?: string): Promise<AuthInfo | undefined> {
     // TODO: Check the scope
-    const db = admin.firestore()
     let queryRef = db.collection("auth_infos").where("client_id", "==", clientId).where("user_id", "==", userId)
     if (scope) {
       scope.split(" ").forEach(s => {
@@ -92,7 +94,6 @@ export class CloudFirestoreDataHandler implements DataHandler {
   }
 
   private async findAuthInfo(fieldName: string, fieldValue: string): Promise<AuthInfo | undefined> {
-    const db = admin.firestore()
     const queryRef = db.collection("auth_infos").where(fieldName, "==", fieldValue)
     const snapshot = await queryRef.get()
     if (snapshot.empty) {
@@ -118,7 +119,6 @@ export class CloudFirestoreDataHandler implements DataHandler {
   }
 
   async getClientUserId(clientId: string, clientSecret: string): Promise<string | undefined> {
-    const db = admin.firestore()
     const client = await db.collection("clients").doc(clientId).get()
     if (client.exists) {
       return client.get("user_id")
@@ -127,7 +127,6 @@ export class CloudFirestoreDataHandler implements DataHandler {
   }
 
   async validateClient(clientId: string, clientSecret: string, grantType: string): Promise<boolean> {
-    const db = admin.firestore()
     const client = await db.collection("clients").doc(clientId).get()
     if (client.exists) {
       // TODO: Check the client status and/or etc.
@@ -137,7 +136,6 @@ export class CloudFirestoreDataHandler implements DataHandler {
   }
 
   async validateClientById(clientId: string): Promise<boolean> {
-    const db = admin.firestore()
     const client = await db.collection("clients").doc(clientId).get()
     if (client.exists) {
       // TODO: Check the client status and/or etc.
@@ -147,7 +145,6 @@ export class CloudFirestoreDataHandler implements DataHandler {
   }
 
   async validateClientForAuthorization(clientId: string, responseType: string): Promise<boolean> {
-    const db = admin.firestore()
     const client = await db.collection("clients").doc(clientId).get()
     if (client.exists) {
       return responseType.split(" ").every((value: string): boolean => {
@@ -158,7 +155,6 @@ export class CloudFirestoreDataHandler implements DataHandler {
   }
 
   async validateRedirectUri(clientId: string, redirectUri: string): Promise<boolean> {
-    const db = admin.firestore()
     const client = await db.collection("clients").doc(clientId).get()
     if (client.exists) {
       const registeredRedirectUri = client.get("redirect_uri")
@@ -173,7 +169,6 @@ export class CloudFirestoreDataHandler implements DataHandler {
 
   async validateScope(clientId: string, scope?: string): Promise<boolean> {
     if (scope) {
-      const db = admin.firestore()
       const client = await db.collection("clients").doc(clientId).get()
       if (client.exists) {
         return client.get(`scope.${scope}`)
@@ -185,7 +180,6 @@ export class CloudFirestoreDataHandler implements DataHandler {
   }
 
   async getAccessToken(token: string): Promise<AccessToken | undefined> {
-    const db = admin.firestore()
     const queryRef = await db.collection("access_tokens").where("token", "==", token)
     const snapshot = await queryRef.get()
     if (snapshot.empty) {
@@ -211,7 +205,6 @@ export class CloudFirestoreDataHandler implements DataHandler {
   }
 
   async getAuthInfoById(id: string): Promise<AuthInfo | undefined> {
-    const db = admin.firestore()
     const authInfo = await db.collection("auth_infos").doc(id).get()
     if (authInfo.exists) {
       return this.convertAuthInfo(authInfo)

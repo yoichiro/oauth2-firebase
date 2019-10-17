@@ -6,7 +6,6 @@ import * as path from "path";
 export interface ConfigurationParameters {
   crypto_auth_token_secret_key_32: string
   project_api_key: string
-  views_authentication_path?: string
   views_consent_template?: ConsentViewTemplate
   tokens_expires_in?: Map<string, number>
   view_path?: string
