@@ -325,7 +325,7 @@ export class MyConsentViewTemplate implements ConsentViewTemplate {
 <body>
 <p><%= providerName %> requests the following permissions:</p>
 <ul>
-    <% for (const key of scope.split(" ")) { %>
+    <% for (const key of scopeString.split(" ")) { %>
     <li><%= scopes.get(key) %></li>
     <% } %>
 </ul>
@@ -348,7 +348,7 @@ export class MyConsentViewTemplate implements ConsentViewTemplate {
 The template string is written as the "ejs" template. This library binds the following values to the template at rendering.
 
 * `providerName: string` - The provider name of the client.
-* `scope: string` - The scope string devided by space the client code specifies.
+* `scopeString: string` - The scope string devided by space the client code specifies.
 * `scopes: Map<string, string>` - The map object which has a set of the scope name and its description.
 * `encryptedAuthToken: string` - The encrypted auth token. You need to set this as the hidden parameter.
 * `encryptedUserId: string` - The encrypted user ID. You need to set this as the hidden parameter.
