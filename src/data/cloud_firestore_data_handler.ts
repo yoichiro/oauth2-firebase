@@ -7,6 +7,9 @@ import {Configuration} from "../utils";
 const secureRandomString = require("secure-random-string");
 
 admin.initializeApp(functions.config().firebase)
+admin.firestore().settings({
+  timestampsInSnapshots: true
+});
 
 export class CloudFirestoreDataHandler implements DataHandler {
 
