@@ -52,7 +52,7 @@ authorizeApp.get("/consent", async (req, resp) => {
   try {
     const template = await consentViewTemplate.provide()
     const html = ejs.render(template, {
-        scope: authToken["scope"],
+        scopeString: authToken["scope"],
         encryptedAuthToken,
         encryptedUserId,
         scopes,

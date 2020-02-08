@@ -9,7 +9,7 @@
 <body>
 <p><%= providerName %> requests the following:</p>
 <ul>
-    <% for (const key of scope.split(" ")) { %>
+    <% for (const key of scopeString.split(" ")) { %>
     <li><%= scopes.get(key) %></li>
     <% } %>
 </ul>
